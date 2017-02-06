@@ -7,7 +7,7 @@ Usage
 -----
 
 ```
-$ npm run
+$ npm run-script run
 ```
 
 License

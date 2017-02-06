@@ -4,7 +4,7 @@
   "description": "Record and track some Twitter related information regarding your followers.",
   "main": "report.js",
   "scripts": {
-    "run": "node report.js"
+    "run": "node report.js || true"
   },
   "author": "Nick Zuber <zuber.nicholas@gmail.com>",
   "license": "MIT",

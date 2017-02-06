@@ -144,7 +144,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     console.log(chalk.green('└─────────────────────────────────┘'))
 
     diffs.new_followers.forEach((followerID) => {
-      if (!analytics.users[followerID]) {
+      if (analytics.users[followerID] === undefined) {
         analytics.users[followerID] = fresh_users[followerID]
       }
       analytics.users[followerID].status = Status.FOLLOWED
@@ -175,7 +175,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     console.log(chalk.red('└─────────────────────────────────┘'))
 
     diffs.lost_followers.forEach((followerID) => {
-      if (!analytics.users[followerID]) {
+      if (analytics.users[followerID] === undefined) {
         analytics.users[followerID] = fresh_users[followerID]
       }
       analytics.users[followerID].status = Status.UNFOLLOWED
