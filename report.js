@@ -4,6 +4,8 @@ const fs = require('fs')
 const twitter = require('twitter')
 const process_env = require('./keys')
 const chalk = require('chalk')
+// `sprintf` does not play nice with `chalk` so we cannot use at the moment
+const sprintf = require("sprintf-js").sprintf
 
 const FILE_WITH_DATA = __dirname + '/data.js'
 const FILE_WITH_ANALYSIS = __dirname + '/analysis.js'
@@ -31,7 +33,7 @@ const toMinutes = milliseconds_passed =>
   Math.ceil((MILLISECONDS_IN_15_MINUTES - milliseconds_passed) / 1000 / 60)
 
 const createBadUser = () => {
-  return { id: 0, name: 'null', screen_name: 'null', _timestamp: CURRENT_DATE }
+  return { id: 0, name: 'null', handle: 'null', _timestamp: CURRENT_DATE }
 }
 
 function getFollowerIds (cc) {
