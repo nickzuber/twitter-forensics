@@ -30,16 +30,29 @@ const client = new twitter({
 const toMinutes = milliseconds_passed =>
   Math.ceil((MILLISECONDS_IN_15_MINUTES - milliseconds_passed) / 1000 / 60)
 
+const createBadUser = () => {
+  return { id: 0, name: 'null', screen_name: 'null' }
+}
+
 function getFollowerIds (cc) {
   client.get('followers/ids', {user_id: MY_TWITTER_USER_ID}, (err, tweets, response) => {
-    if (err) throw new Error(chalk.red('Too many requests; exceeded available limit rate for fetching followers.'))
+    if (err) throw new Error(chalk.red(`followers/ids\n${JSON.stringify(err)}`))
     cc(tweets)
   })
 }
 
 function getUsersFromIds (ids, cc) {
   client.get('users/lookup', {user_id: ids}, (err, tweets, response) => {
-    if (err) throw new Error(chalk.red('Too many requests; exceeded available limit rate for fetching user profiles.'))
+    if (err) {
+      switch (err[0].code) {
+        // Bad id
+        case 17:
+          cc(createBadUser())
+          break
+        default:
+          throw new Error(chalk.red(`users/lookup\n${JSON.stringify(err)}`))
+     }
+   }
     cc(tweets)
   })
 }
@@ -107,6 +120,7 @@ function readFromFile () {
     // If the last time we refreshed was over 15 minutes
     if (CURRENT_DATE - saved_follower_list._timestamp > MILLISECONDS_IN_15_MINUTES ||
         saved_follower_list._requestCount < 15) {
+      // Potential try/catch here
       checkForDiffsAndRehydrate(saved_follower_list)
     } else {
       // Showing the analytics should take cached users from the past 3? days
@@ -121,6 +135,8 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
   fs.readFile(FILE_WITH_ANALYSIS, 'utf8', function (err, data) {
     // Parse into javascript object
     const analytics = JSON.parse(data)
+
+console.log(fresh_users)
 
     console.log('')
 
@@ -145,7 +161,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
 
     diffs.new_followers.forEach((followerID) => {
       if (analytics.users[followerID] === undefined) {
-        analytics.users[followerID] = fresh_users[followerID]
+        analytics.users[followerID] = fresh_users[followerID] || createBadUser()
       }
       analytics.users[followerID].status = Status.FOLLOWED
       console.log(chalk.green(`+ ${analytics.users[followerID].name}`) +
