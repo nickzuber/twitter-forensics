@@ -31,7 +31,7 @@ const toMinutes = milliseconds_passed =>
   Math.ceil((MILLISECONDS_IN_15_MINUTES - milliseconds_passed) / 1000 / 60)
 
 const createBadUser = () => {
-  return { id: 0, name: 'null', screen_name: 'null' }
+  return { id: 0, name: 'null', screen_name: 'null', _timestamp: CURRENT_DATE }
 }
 
 function getFollowerIds (cc) {
@@ -192,7 +192,7 @@ console.log(fresh_users)
 
     diffs.lost_followers.forEach((followerID) => {
       if (analytics.users[followerID] === undefined) {
-        analytics.users[followerID] = fresh_users[followerID]
+        analytics.users[followerID] = fresh_users[followerID] || createBadUser()
       }
       analytics.users[followerID].status = Status.UNFOLLOWED
       console.log(chalk.red(`- ${analytics.users[followerID].name}`) +
