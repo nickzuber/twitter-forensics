@@ -1,0 +1,12 @@
+
+# Normal ignores
+.DS_Store
+/node_modules
+
+# Private files
+keys.js
+
+# Auto generated files
+analysis.js
+data.js
+output.js

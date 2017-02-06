@@ -1,0 +1,15 @@
+{
+  "name": "twitter-followers-tracker",
+  "version": "1.0.0",
+  "description": "Record and track some Twitter related information regarding your followers.",
+  "main": "report.js",
+  "scripts": {
+    "run": "node report.js"
+  },
+  "author": "Nick Zuber <zuber.nicholas@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "twitter": "^1.7.0"
+  }
+}
