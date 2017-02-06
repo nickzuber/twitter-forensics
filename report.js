@@ -165,9 +165,9 @@ console.log(fresh_users)
         analytics.users[followerID] = fresh_users[followerID] || createBadUser()
       }
       analytics.users[followerID].status = Status.FOLLOWED
-      console.log(chalk.green(`+ ${analytics.users[followerID].name}`) +
-                  chalk.gray(` @${analytics.users[followerID].handle}`) +
-                  chalk.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
+      console.log(chalk.bold.green(`+ ${analytics.users[followerID].name}`) +
+                  chalk.bold.gray(` @${analytics.users[followerID].handle}`) +
+                  chalk.bold.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
     })
 
     // Recent cached followers
@@ -196,9 +196,9 @@ console.log(fresh_users)
         analytics.users[followerID] = fresh_users[followerID] || createBadUser()
       }
       analytics.users[followerID].status = Status.UNFOLLOWED
-      console.log(chalk.red(`- ${analytics.users[followerID].name}`) +
-                  chalk.gray(` @${analytics.users[followerID].handle}`) +
-                  chalk.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
+      console.log(chalk.bold.red(`- ${analytics.users[followerID].name}`) +
+                  chalk.bold.gray(` @${analytics.users[followerID].handle}`) +
+                  chalk.bold.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
     })
 
     // Recent cached unfollowers
