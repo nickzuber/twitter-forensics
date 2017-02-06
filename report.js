@@ -47,7 +47,7 @@ function getUsersFromIds (ids, cc) {
       switch (err[0].code) {
         // Bad id
         case 17:
-          cc(createBadUser())
+          return cc([createBadUser()])
           break
         default:
           throw new Error(chalk.red(`users/lookup\n${JSON.stringify(err)}`))
@@ -85,6 +85,7 @@ function checkForDiffsAndRehydrate (saved_follower_list) {
     if (diffs.lost_followers.length || diffs.new_followers.length) {
       let stringified_ids = diffs.lost_followers.concat(diffs.new_followers).join(',')
       getUsersFromIds(stringified_ids, (probably_uncached_users) => {
+        console.log(probably_uncached_users)
         const decorated_users = probably_uncached_users.reduce((acc, user) => {
           acc[user.id] = {}
           acc[user.id]._timestamp = CURRENT_DATE
@@ -166,7 +167,7 @@ console.log(fresh_users)
       analytics.users[followerID].status = Status.FOLLOWED
       console.log(chalk.green(`+ ${analytics.users[followerID].name}`) +
                   chalk.gray(` @${analytics.users[followerID].handle}`) +
-                  chalk.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#m##ampm#, #DD#/#MM#/#YYYY#')}`))
+                  chalk.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
     })
 
     // Recent cached followers
@@ -180,7 +181,7 @@ console.log(fresh_users)
     cachedFollowers.forEach(id => {
       console.log(chalk.green(`  ${analytics.users[id].name}`) +
                   chalk.gray(` @${analytics.users[id].handle}`) +
-                  chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#m##ampm#, #DD#/#MM#/#YYYY#')}`))
+                  chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
     })
 
     console.log('')
@@ -197,7 +198,7 @@ console.log(fresh_users)
       analytics.users[followerID].status = Status.UNFOLLOWED
       console.log(chalk.red(`- ${analytics.users[followerID].name}`) +
                   chalk.gray(` @${analytics.users[followerID].handle}`) +
-                  chalk.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#m##ampm#, #DD#/#MM#/#YYYY#')}`))
+                  chalk.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
     })
 
     // Recent cached unfollowers
@@ -211,7 +212,7 @@ console.log(fresh_users)
     cachedUnfollowers.forEach(id => {
       console.log(chalk.red(`  ${analytics.users[id].name}`) +
                   chalk.gray(` @${analytics.users[id].handle}`) +
-                  chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#m##ampm#, #DD#/#MM#/#YYYY#')}`))
+                  chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
     })
 
     // We only want to update if there's a diff
