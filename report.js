@@ -147,7 +147,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     console.log(chalk.bold.white(`                ${totalFollowersCount}`))
 
     if (diffs.new_followers.length === 0 && diffs.lost_followers.length === 0)
-      console.log(chalk.gray('        No changes detected'))
+      console.log(chalk.gray('\n        No changes detected'))
 
     console.log('')
 
