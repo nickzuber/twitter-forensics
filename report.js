@@ -77,7 +77,7 @@ function checkForDiffsAndRehydrate (saved_follower_list) {
 
     // @TEST (mocks new unfollower)
     // WARNING: may create duplicate
-    // saved_follower_list.ids.push(1056343550)
+    saved_follower_list.ids.push(940666819)
 
     // Sort the ids so we can find diff quicker
     new_follower_list.ids.sort((a, b) => a - b)
@@ -87,7 +87,6 @@ function checkForDiffsAndRehydrate (saved_follower_list) {
     if (diffs.lost_followers.length || diffs.new_followers.length) {
       let stringified_ids = diffs.lost_followers.concat(diffs.new_followers).join(',')
       getUsersFromIds(stringified_ids, (probably_uncached_users) => {
-        console.log(probably_uncached_users)
         const decorated_users = probably_uncached_users.reduce((acc, user) => {
           acc[user.id] = {}
           acc[user.id]._timestamp = CURRENT_DATE
@@ -139,8 +138,6 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     // Parse into javascript object
     const analytics = JSON.parse(data)
 
-console.log(fresh_users)
-
     console.log('')
 
     // width := 35
@@ -179,7 +176,7 @@ console.log(fresh_users)
                     analytics.users[id].id !== 0)
       .sort((a, b) => b._timestamp - a._timestamp)
       .slice(0, MAX_USERS_TO_DISPLAY)
-    if (cachedFollowers.length === 0)
+    if (cachedFollowers.length === 0 && diffs.new_followers.length === 0)
       console.log(chalk.gray('          Nobody recently'))
     cachedFollowers.forEach(id => {
       console.log(chalk.green(`  ${analytics.users[id].name}`) +
@@ -211,7 +208,7 @@ console.log(fresh_users)
                     analytics.users[id].id !== 0)
       .sort((a, b) => b._timestamp - a._timestamp)
       .slice(0, MAX_USERS_TO_DISPLAY)
-    if (cachedUnfollowers.length === 0)
+    if (cachedUnfollowers.length === 0 && diffs.lost_followers.length === 0)
       console.log(chalk.gray('          Nobody recently'))
     cachedUnfollowers.forEach(id => {
       console.log(chalk.red(`  ${analytics.users[id].name}`) +
