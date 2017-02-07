@@ -148,9 +148,9 @@ console.log(fresh_users)
     console.log(chalk.blue('│   Twitter Followers Forensics   │'))
     console.log(chalk.blue('└─────────────────────────────────┘'))
 
-    console.log(chalk.yellow('│         Total Followers         │'))
-    console.log(chalk.yellow('└─────────────────────────────────┘'))
-    console.log(chalk.yellow(`                ${totalFollowersCount}\n`))
+    console.log(chalk.cyan('│         Total Followers         │'))
+    console.log(chalk.cyan('└─────────────────────────────────┘'))
+    console.log(chalk.cyan(`                ${totalFollowersCount}\n`))
 
     if (diffs.new_followers.length === 0 && diffs.lost_followers.length === 0)
       console.log(chalk.gray('        No changes detected'))
