@@ -148,9 +148,9 @@ console.log(fresh_users)
     console.log(chalk.blue('│   Twitter Followers Forensics   │'))
     console.log(chalk.blue('└─────────────────────────────────┘'))
 
-    console.log(chalk.white('│         Total Followers         │'))
-    console.log(chalk.white('└─────────────────────────────────┘'))
-    console.log(chalk.green(`                ${totalFollowersCount}\n`))
+    console.log(chalk.yellow('│         Total Followers         │'))
+    console.log(chalk.yellow('└─────────────────────────────────┘'))
+    console.log(chalk.yellow(`                ${totalFollowersCount}\n`))
 
     if (diffs.new_followers.length === 0 && diffs.lost_followers.length === 0)
       console.log(chalk.gray('        No changes detected'))
@@ -175,7 +175,8 @@ console.log(fresh_users)
     // Recent cached followers
     const cachedFollowers = Object.keys(analytics.users)
       .filter(id => analytics.users[id].status === Status.FOLLOWED &&
-                    !(fresh_users && fresh_users[id]))
+                    !(fresh_users && fresh_users[id]) &&
+                    analytics.users[id].id !== 0)
       .sort((a, b) => b._timestamp - a._timestamp)
       .slice(0, MAX_USERS_TO_DISPLAY)
     if (cachedFollowers.length === 0)
@@ -206,7 +207,8 @@ console.log(fresh_users)
     // Recent cached unfollowers
     const cachedUnfollowers = Object.keys(analytics.users)
       .filter(id => analytics.users[id].status === Status.UNFOLLOWED &&
-                    !(fresh_users && fresh_users[id]))
+                    !(fresh_users && fresh_users[id]) &&
+                    analytics.users[id].id !== 0)
       .sort((a, b) => b._timestamp - a._timestamp)
       .slice(0, MAX_USERS_TO_DISPLAY)
     if (cachedUnfollowers.length === 0)
