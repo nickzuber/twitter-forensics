@@ -15,7 +15,6 @@ const CURRENT_DATE = new Date().getTime()
 /* Customizable constants */
 const MY_TWITTER_USER_ID = 402143571  // Your Twitter user ID
 const MAX_USERS_TO_DISPLAY = 5        // Number of users for forensics reporting
-/* */
 
 const Status = {
   UNFOLLOWED: 'unfollowed',
@@ -77,7 +76,7 @@ function checkForDiffsAndRehydrate (saved_follower_list) {
 
     // @TEST (mocks new unfollower)
     // WARNING: may create duplicate
-    saved_follower_list.ids.push(940666819)
+    // saved_follower_list.ids.push(940666819)
 
     // Sort the ids so we can find diff quicker
     new_follower_list.ids.sort((a, b) => a - b)
@@ -125,9 +124,7 @@ function readFromFile () {
       // Potential try/catch here
       checkForDiffsAndRehydrate(saved_follower_list)
     } else {
-      // Showing the analytics should take cached users from the past 3? days
-      // Should also clean out very old users from cache as well
-      //  - Will not be a proper cache, no need
+      // @TODO print four en sicks
       console.log(chalk.gray(`you must wait ${toMinutes(CURRENT_DATE - saved_follower_list._timestamp)} more minutes`))
     }
   })
