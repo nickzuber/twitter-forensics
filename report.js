@@ -32,7 +32,7 @@ const toMinutes = milliseconds_passed =>
   Math.ceil((MILLISECONDS_IN_15_MINUTES - milliseconds_passed) / 1000 / 60)
 
 const createBadUser = () => {
-  return { id: 0, name: 'null', handle: 'null', _timestamp: CURRENT_DATE }
+  return { id: '0', name: 'null', handle: 'null', _timestamp: CURRENT_DATE }
 }
 
 function getFollowerIds (cc) {
@@ -76,7 +76,7 @@ function checkForDiffsAndRehydrate (saved_follower_list) {
 
     // @TEST (mocks new unfollower)
     // WARNING: may create duplicate
-    // saved_follower_list.ids.push(940666819)
+    // saved_follower_list.ids.push('810673913445416960')
 
     // Sort the ids so we can find diff quicker
     new_follower_list.ids.sort((a, b) => a - b)
@@ -87,11 +87,11 @@ function checkForDiffsAndRehydrate (saved_follower_list) {
       let stringified_ids = diffs.lost_followers.concat(diffs.new_followers).join(',')
       getUsersFromIds(stringified_ids, (probably_uncached_users) => {
         const decorated_users = probably_uncached_users.reduce((acc, user) => {
-          acc[user.id] = {}
-          acc[user.id]._timestamp = CURRENT_DATE
-          acc[user.id].name = user.name
-          acc[user.id].id = user.id
-          acc[user.id].handle = user.screen_name
+          acc[user.id_str] = {}
+          acc[user.id_str]._timestamp = CURRENT_DATE
+          acc[user.id_str].name = user.name
+          acc[user.id_str].id = user.id_str
+          acc[user.id_str].handle = user.screen_name
           return acc
         }, {})
         reportFollowerForensics(totalFollowersCount, diffs, decorated_users)
