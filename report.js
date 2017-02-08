@@ -36,8 +36,17 @@ const createBadUser = () => {
 }
 
 function getFollowerIds (cc) {
-  client.get('followers/ids', {user_id: MY_TWITTER_USER_ID}, (err, tweets, response) => {
-    if (err) throw new Error(chalk.red(`followers/ids\n${JSON.stringify(err)}`))
+  client.get('followers/ids', {user_id: MY_TWITTER_USER_ID, stringify_ids: true}, (err, tweets, response) => {
+    if (err) {
+      switch (err[0].code) {
+        // rate limit exceeded
+        case 88:
+          return reportFollowerForensics(-1, { new_followers: [], lost_followers: [] })
+          break
+        default:
+          throw new Error(chalk.red(`followers/ids\n${JSON.stringify(err)}`))
+     }
+    }
     cc(tweets)
   })
 }
@@ -95,7 +104,6 @@ function checkForDiffsAndRehydrate (saved_follower_list) {
           return acc
         }, {})
         reportFollowerForensics(totalFollowersCount, diffs, decorated_users)
-
         // Store back in file with data
         fs.writeFile(FILE_WITH_DATA, JSON.stringify(new_follower_list), function (err) {
           if (err) throw new Error(err)
@@ -144,7 +152,11 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
 
     console.log(chalk.cyan('│         Total Followers         │'))
     console.log(chalk.cyan('└─────────────────────────────────┘'))
-    console.log(chalk.bold.white(`                ${totalFollowersCount}`))
+    if (totalFollowersCount === -1)
+      console.log(chalk.bold.white(` (request limit hit, cooling down)`))
+    else
+      console.log(chalk.bold.white(`                ${totalFollowersCount}`))
+
 
     if (diffs.new_followers.length === 0 && diffs.lost_followers.length === 0)
       console.log(chalk.gray('\n        No changes detected'))
@@ -228,13 +240,17 @@ function disjunctiveUnion (old_list, new_list) {
   const lost_followers = []
   let i = 0, j = 0
   while (i < old_list.length && j < new_list.length) {
-    if (old_list[i] === new_list[j]) {
+    // we want the coersion
+    if (old_list[i] == new_list[j]) {
       ++i
       ++j
     } else if (old_list[i] < new_list[j]) {
       lost_followers.push(old_list[i++])
     } else if (old_list[i] > new_list[j]) {
       new_followers.push(new_list[j++])
+    } else {
+      throw new Error('this should never happen, but if \
+        it does this error is preventing an infinite loop.')
     }
   }
   while (j < new_list.length)
