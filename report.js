@@ -37,7 +37,8 @@ const createBadUser = () => {
 
 function getFollowerIds (cc) {
   client.get('followers/ids', {user_id: MY_TWITTER_USER_ID, stringify_ids: true}, (err, tweets, response) => {
-    if (err) {
+		if (err) {
+			if (!err[0]) throw new Error(JSON.stringify(err))
       switch (err[0].code) {
         // rate limit exceeded
         case 88:
@@ -146,34 +147,28 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     console.log('')
 
     // width := 35
-    console.log(chalk.blue('┌─────────────────────────────────┐'))
-    console.log(chalk.blue('│   Twitter Followers Forensics   │'))
-    console.log(chalk.blue('└─────────────────────────────────┘'))
+    // console.log(chalk.blue('┌─────────────────────────────────┐'))
+    // console.log(chalk.blue('│   Twitter Followers Forensics   │'))
+    // console.log(chalk.blue('└─────────────────────────────────┘'))
+		console.log(chalk.blue.bold('🐦  Twitter Follower Forensics'))
 
-    console.log(chalk.cyan('│         Total Followers         │'))
-    console.log(chalk.cyan('└─────────────────────────────────┘'))
-    if (totalFollowersCount === -1)
-      console.log(chalk.bold.white(` (request limit hit, cooling down)`))
+		let prefix = chalk.white.bold('📢  Total Followers: ')
+		if (totalFollowersCount === -1)
+      console.log(`${prefix}\n   (request limit hit, cooling down)`)
     else
-      console.log(chalk.bold.white(`                ${totalFollowersCount}`))
+      console.log(`${prefix}\n   ${totalFollowersCount}`)
 
-
-    if (diffs.new_followers.length === 0 && diffs.lost_followers.length === 0)
-      console.log(chalk.gray('\n        No changes detected'))
-
-    console.log('')
+		console.log('');
 
     // New followers
-    console.log(chalk.green('┌─────────────────────────────────┐'))
-    console.log(chalk.green('│          New Followers          │'))
-    console.log(chalk.green('└─────────────────────────────────┘'))
+		console.log(chalk.white.bold('🐪  Recent Followers'))
 
     diffs.new_followers.forEach((followerID) => {
       if (analytics.users[followerID] === undefined) {
         analytics.users[followerID] = fresh_users[followerID] || createBadUser()
       }
       analytics.users[followerID].status = Status.FOLLOWED
-      console.log(chalk.bold.green(`+ ${analytics.users[followerID].name}`) +
+      console.log(chalk.bold.green(` + ${analytics.users[followerID].name}`) +
                   chalk.bold.gray(` @${analytics.users[followerID].handle}`) +
                   chalk.bold.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
     })
@@ -188,7 +183,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     if (cachedFollowers.length === 0 && diffs.new_followers.length === 0)
       console.log(chalk.gray('          Nobody recently'))
     cachedFollowers.forEach(id => {
-      console.log(chalk.green(`  ${analytics.users[id].name}`) +
+      console.log(chalk.green(`   ${analytics.users[id].name}`) +
                   chalk.gray(` @${analytics.users[id].handle}`) +
                   chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
     })
@@ -196,16 +191,14 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     console.log('')
 
     // Unfollowers
-    console.log(chalk.red('┌─────────────────────────────────┐'))
-    console.log(chalk.red('│           UnFollowers           │'))
-    console.log(chalk.red('└─────────────────────────────────┘'))
+		console.log(chalk.white.bold('🐙  Recent Unfollowers'))
 
     diffs.lost_followers.forEach((followerID) => {
       if (analytics.users[followerID] === undefined) {
         analytics.users[followerID] = fresh_users[followerID] || createBadUser()
       }
       analytics.users[followerID].status = Status.UNFOLLOWED
-      console.log(chalk.bold.red(`- ${analytics.users[followerID].name}`) +
+      console.log(chalk.bold.red(` - ${analytics.users[followerID].name}`) +
                   chalk.bold.gray(` @${analytics.users[followerID].handle}`) +
                   chalk.bold.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
     })
@@ -220,7 +213,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     if (cachedUnfollowers.length === 0 && diffs.lost_followers.length === 0)
       console.log(chalk.gray('          Nobody recently'))
     cachedUnfollowers.forEach(id => {
-      console.log(chalk.red(`  ${analytics.users[id].name}`) +
+      console.log(chalk.red(`   ${analytics.users[id].name}`) +
                   chalk.gray(` @${analytics.users[id].handle}`) +
                   chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
     })
