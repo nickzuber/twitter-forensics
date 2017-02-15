@@ -143,20 +143,25 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
   fs.readFile(FILE_WITH_ANALYSIS, 'utf8', function (err, data) {
     // Parse into javascript object
     const analytics = JSON.parse(data)
+	
+		const totalFollowersDiff = diffs.new_followers.length - diffs.lost_followers.length
+
+		let tdfString = ''
+
+		if (totalFollowersDiff < 0)
+			tdfString = `(${totalFollowersDiff})`
+		else if (totalFollowersDiff < 0)
+			tdfString = `(+${totalFollowersDiff})`
 
     console.log('')
 
-    // width := 35
-    // console.log(chalk.blue('┌─────────────────────────────────┐'))
-    // console.log(chalk.blue('│   Twitter Followers Forensics   │'))
-    // console.log(chalk.blue('└─────────────────────────────────┘'))
 		console.log(chalk.blue.bold('🐦  Twitter Follower Forensics'))
 
-		let prefix = chalk.white.bold('📢  Total Followers: ')
+		let prefix = chalk.white.bold('📢  Total Followers')
 		if (totalFollowersCount === -1)
       console.log(`${prefix}\n   (request limit hit, cooling down)`)
     else
-      console.log(`${prefix}\n   ${totalFollowersCount}`)
+      console.log(`${prefix}\n   ${totalFollowersCount} ${tdfString}`)
 
 		console.log('');
 
