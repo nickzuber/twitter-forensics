@@ -149,9 +149,9 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
 		let tdfString = ''
 
 		if (totalFollowersDiff < 0)
-			tdfString = `(${totalFollowersDiff})`
+			tdfString = chalk.gray(`${totalFollowersDiff}`)
 		else if (totalFollowersDiff < 0)
-			tdfString = `(+${totalFollowersDiff})`
+			tdfString = chalk.gray(`+${totalFollowersDiff})`)
 
     console.log('')
 
