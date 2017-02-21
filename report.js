@@ -143,7 +143,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
   fs.readFile(FILE_WITH_ANALYSIS, 'utf8', function (err, data) {
     // Parse into javascript object
     const analytics = JSON.parse(data)
-	
+
 		const totalFollowersDiff = diffs.new_followers.length - diffs.lost_followers.length
 
 		let tdfString = ''
@@ -175,7 +175,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
       analytics.users[followerID].status = Status.FOLLOWED
       console.log(chalk.bold.green(` + ${analytics.users[followerID].name}`) +
                   chalk.bold.gray(` @${analytics.users[followerID].handle}`) +
-                  chalk.bold.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
+                  chalk.bold.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #MM#/#DD#/#YYYY#')}`))
     })
 
     // Recent cached followers
@@ -183,14 +183,14 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
       .filter(id => analytics.users[id].status === Status.FOLLOWED &&
                     !(fresh_users && fresh_users[id]) &&
                     analytics.users[id].id !== 0)
-      .sort((a, b) => b._timestamp - a._timestamp)
+      .sort((a, b) => analytics.users[b]._timestamp - analytics.users[a]._timestamp)
       .slice(0, MAX_USERS_TO_DISPLAY)
     if (cachedFollowers.length === 0 && diffs.new_followers.length === 0)
       console.log(chalk.gray('          Nobody recently'))
     cachedFollowers.forEach(id => {
       console.log(chalk.green(`   ${analytics.users[id].name}`) +
                   chalk.gray(` @${analytics.users[id].handle}`) +
-                  chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
+                  chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#mm##ampm#, #MM#/#DD#/#YYYY#')}`))
     })
 
     console.log('')
@@ -205,7 +205,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
       analytics.users[followerID].status = Status.UNFOLLOWED
       console.log(chalk.bold.red(` - ${analytics.users[followerID].name}`) +
                   chalk.bold.gray(` @${analytics.users[followerID].handle}`) +
-                  chalk.bold.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
+                  chalk.bold.gray(` | ${new Date(analytics.users[followerID]._timestamp).customFormat('#h#:#mm##ampm#, #MM#/#DD#/#YYYY#')}`))
     })
 
     // Recent cached unfollowers
@@ -213,14 +213,14 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
       .filter(id => analytics.users[id].status === Status.UNFOLLOWED &&
                     !(fresh_users && fresh_users[id]) &&
                     analytics.users[id].id !== 0)
-      .sort((a, b) => b._timestamp - a._timestamp)
+      .sort((a, b) => analytics.users[b]._timestamp - analytics.users[a]._timestamp)
       .slice(0, MAX_USERS_TO_DISPLAY)
     if (cachedUnfollowers.length === 0 && diffs.lost_followers.length === 0)
       console.log(chalk.gray('          Nobody recently'))
     cachedUnfollowers.forEach(id => {
       console.log(chalk.red(`   ${analytics.users[id].name}`) +
                   chalk.gray(` @${analytics.users[id].handle}`) +
-                  chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#mm##ampm#, #DD#/#MM#/#YYYY#')}`))
+                  chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#mm##ampm#, #MM#/#DD#/#YYYY#')}`))
     })
 
     // We only want to update if there's a diff
