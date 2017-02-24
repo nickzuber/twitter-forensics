@@ -91,7 +91,8 @@ function checkForDiffsAndRehydrate (saved_follower_list) {
     // Sort the ids so we can find diff quicker
     new_follower_list.ids.sort((a, b) => a - b)
 
-    const diffs = disjunctiveUnion(saved_follower_list.ids, new_follower_list.ids)
+    const diffs = disjunctiveUnion(saved_follower_list.ids.map(parseFloat),
+                                   new_follower_list.ids.map(parseFloat))
 
     if (diffs.lost_followers.length || diffs.new_followers.length) {
       let stringified_ids = diffs.lost_followers.concat(diffs.new_followers).join(',')
@@ -238,7 +239,6 @@ function disjunctiveUnion (old_list, new_list) {
   const lost_followers = []
   let i = 0, j = 0
   while (i < old_list.length && j < new_list.length) {
-    // we want the coersion
     if (old_list[i] == new_list[j]) {
       ++i
       ++j
