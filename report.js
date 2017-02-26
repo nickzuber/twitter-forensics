@@ -38,7 +38,9 @@ const createBadUser = () => {
 function getFollowerIds (cc) {
   client.get('followers/ids', {user_id: MY_TWITTER_USER_ID, stringify_ids: true}, (err, tweets, response) => {
 		if (err) {
-			if (!err[0]) throw new Error(JSON.stringify(err))
+      if (err.code === 'ENOTFOUND') throw new Error(chalk.red(`You probably aren't \
+        connected to the internet right now`))
+			if (!err[0]) throw new Error(chalk.red(JSON.stringify(err)))
       switch (err[0].code) {
         // rate limit exceeded
         case 88:
