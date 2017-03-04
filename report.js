@@ -185,7 +185,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     const cachedFollowers = Object.keys(analytics.users)
       .filter(id => analytics.users[id].status === Status.FOLLOWED &&
                     !(fresh_users && fresh_users[id]) &&
-                    analytics.users[id].id !== 0)
+                    analytics.users[id].id != 0)
       .sort((a, b) => analytics.users[b]._timestamp - analytics.users[a]._timestamp)
       .slice(0, MAX_USERS_TO_DISPLAY)
     if (cachedFollowers.length === 0 && diffs.new_followers.length === 0)
@@ -215,7 +215,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     const cachedUnfollowers = Object.keys(analytics.users)
       .filter(id => analytics.users[id].status === Status.UNFOLLOWED &&
                     !(fresh_users && fresh_users[id]) &&
-                    analytics.users[id].id !== 0)
+                    analytics.users[id].id != 0)
       .sort((a, b) => analytics.users[b]._timestamp - analytics.users[a]._timestamp)
       .slice(0, MAX_USERS_TO_DISPLAY)
     if (cachedUnfollowers.length === 0 && diffs.lost_followers.length === 0)
