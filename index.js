@@ -1,9 +1,12 @@
+#!/usr/bin/env node
+
 'use strict'
 
 const fs = require('fs')
 const twitter = require('twitter')
 const process_env = require('./keys')
 const chalk = require('chalk')
+const program = require('commander')
 // `sprintf` does not play nice with `chalk` so we cannot use at the moment
 const sprintf = require("sprintf-js").sprintf
 
@@ -14,7 +17,7 @@ const CURRENT_DATE = new Date().getTime()
 
 /* Customizable constants */
 const MY_TWITTER_USER_ID = 402143571  // Your Twitter user ID
-const MAX_USERS_TO_DISPLAY = 5        // Number of users for forensics reporting
+const MAX_USERS_TO_DISPLAY = 3        // Number of users for forensics reporting
 
 const Status = {
   UNFOLLOWED: 'unfollowed',
@@ -54,6 +57,25 @@ function getFollowerIds (cc) {
   })
 }
 
+function getFollowingIds (cc) {
+  client.get('friends/ids', {user_id: MY_TWITTER_USER_ID, stringify_ids: true}, (err, tweets, response) => {
+		if (err) {
+      if (err.code === 'ENOTFOUND') throw new Error(chalk.red(`You probably aren't \
+        connected to the internet right now`))
+			if (!err[0]) throw new Error(chalk.red(JSON.stringify(err)))
+      switch (err[0].code) {
+        // rate limit exceeded
+        case 88:
+          return reportFollowerForensics(-1, { new_followers: [], lost_followers: [] })
+          break
+        default:
+          throw new Error(chalk.red(`following/ids\n${JSON.stringify(err)}`))
+     }
+    }
+    cc(tweets)
+  })
+}
+
 function getUsersFromIds (ids, cc) {
   client.get('users/lookup', {user_id: ids}, (err, tweets, response) => {
     if (err) {
@@ -67,6 +89,33 @@ function getUsersFromIds (ids, cc) {
      }
    }
     cc(tweets)
+  })
+}
+
+function getNonMutualFollowers () {
+  getFollowingIds((following_tweets) => {
+    getFollowerIds((follower_tweets) => {
+      // Followers
+      const new_follower_list = JSON.parse(JSON.stringify(follower_tweets))
+      // Following
+      const new_following_list = JSON.parse(JSON.stringify(following_tweets))
+
+      const followerSet = new Set(new_follower_list.ids.map(id => parseFloat(id)))
+      const followingSet = new Set(new_following_list.ids.map(id => parseFloat(id)))
+
+      const diffs = new Set([...followingSet].filter(x => !followerSet.has(x)));
+
+      var stringified_ids = ''
+      diffs.forEach(i => stringified_ids += `${i},`)
+      stringified_ids = stringified_ids.slice(0, -1)
+      console.log(chalk.white.bold('\n🐙  Not Following Back'))
+      getUsersFromIds(stringified_ids, (users) => {
+        users.map((user) => {
+          console.log(`    ${chalk.red(user.name)} ${chalk.gray('@' + user.screen_name)}`)
+        })
+        console.log('')
+      })
+     })
   })
 }
 
@@ -164,7 +213,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
 		if (totalFollowersCount === -1)
       console.log(`${prefix}\n   (request limit hit, cooling down)`)
     else
-      console.log(`${prefix}\n   ${totalFollowersCount} ${tdfString}`)
+      console.log(`${prefix}\n    ${totalFollowersCount} ${tdfString}`)
 
 		console.log('');
 
@@ -191,7 +240,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     if (cachedFollowers.length === 0 && diffs.new_followers.length === 0)
       console.log(chalk.gray('          Nobody recently'))
     cachedFollowers.forEach(id => {
-      console.log(chalk.green(`   ${analytics.users[id].name}`) +
+      console.log(chalk.green(`    ${analytics.users[id].name}`) +
                   chalk.gray(` @${analytics.users[id].handle}`) +
                   chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#mm##ampm#, #MM#/#DD#/#YYYY#')}`))
     })
@@ -221,7 +270,7 @@ function reportFollowerForensics (totalFollowersCount, diffs, fresh_users) {
     if (cachedUnfollowers.length === 0 && diffs.lost_followers.length === 0)
       console.log(chalk.gray('          Nobody recently'))
     cachedUnfollowers.forEach(id => {
-      console.log(chalk.red(`   ${analytics.users[id].name}`) +
+      console.log(chalk.red(`    ${analytics.users[id].name}`) +
                   chalk.gray(` @${analytics.users[id].handle}`) +
                   chalk.gray(` | ${new Date(analytics.users[id]._timestamp).customFormat('#h#:#mm##ampm#, #MM#/#DD#/#YYYY#')}`))
     })
@@ -263,7 +312,24 @@ function disjunctiveUnion (old_list, new_list) {
   }
 }
 
-readFromFile()
+program.version('1.0.0')
+  .usage('[command]')
+
+program.command('unfollowers')
+  .description('find the people who\'ve recently unfollowed you')
+  .action(readFromFile);
+
+program.command('nonmutuals')
+  .description('find the people who you follow and aren\'t following you back')
+  .action(getNonMutualFollowers);
+
+program.parse(process.argv);
+
+// Set default command to --help
+if (!process.argv.slice(2).length) {
+  program.outputHelp();
+  process.exit(0);
+}
 
 // Date formatting from StackOverflow
 //*** This code is copyright 2002-2016 by Gavin Kistner, !@phrogz.net

@@ -1,15 +1,19 @@
 {
   "name": "twitter-followers-tracker",
+  "bin": {
+    "twitter": "index.js"
+  },
   "version": "1.0.0",
   "description": "Record and track some Twitter related information regarding your followers.",
-  "main": "report.js",
+  "main": "index.js",
   "scripts": {
-    "run": "node report.js || true"
+    "run": "node index.js || true"
   },
   "author": "Nick Zuber <zuber.nicholas@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "chalk": "^1.1.3",
+    "commander": "^2.14.1",
     "sprintf-js": "^1.0.3",
     "twitter": "^1.7.0"
   }

@@ -24,18 +24,25 @@ const MY_TWITTER_USER_ID = 402143571  // Your Twitter user ID
 const MAX_USERS_TO_DISPLAY = 5        // Number of users for forensics reporting
 ```
 
-Then just run the script.
+Then just link and use at the command line.
 
 ```
-$ npm run-script run
-```
+$ npm link
+$ twitter
 
-Or you can do what I do and create some type of alias for this script.
+  Usage: twitter [command]
 
-```bash
-function twitter {
-  node ~/custom_scripts/twitter-forensics
-}
+
+  Options:
+
+    -V, --version  output the version number
+    -h, --help     output usage information
+
+
+  Commands:
+
+    unfollowers  find the people who've recently unfollowed you
+    nonmutuals   find the people who you follow and aren't following you back
 ```
 
 License
